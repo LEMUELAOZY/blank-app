@@ -1,182 +1,146 @@
 import streamlit as st
 import random
 
-# ----------------------------
-# Apply Glassy Constellation Theme
-# ----------------------------
+st.set_page_config(page_title="⭐ Star Navigator", layout="wide", page_icon="✨")
 
-st.set_page_config(page_title="Star Navigation Tool", layout="centered")
-
-st.markdown("""
-<style>
-/* Body background: starry sky */
-body {
-    background: url('https://i.imgur.com/LXW9JZt.jpg') no-repeat center center fixed;
-    background-size: cover;
-    color: #ffffff;
-    font-family: 'Segoe UI', sans-serif;
-}
-
-/* Glassy panels */
-.stApp {
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 20px;
-}
-
-/* Headers */
-h1, h2, h3 {
-    color: #f0f8ff;
-    text-shadow: 0 0 10px #00ffff;
-}
-
-/* Buttons */
-.stButton button {
-    background: rgba(255, 255, 255, 0.2);
-    color: #00ffff;
-    border-radius: 12px;
-    border: 1px solid #00ffff;
-    padding: 10px 20px;
-    font-weight: bold;
-    box-shadow: 0 0 10px #00ffff;
-}
-.stButton button:hover {
-    background: rgba(255, 255, 255, 0.4);
-}
-</style>
-""", unsafe_allow_html=True)
-
-# ----------------------------
-# STAR DATABASE
-# ----------------------------
-
+# -----------------------------
+# DATA
+# -----------------------------
 stars = {
-    "altair":{
-        "name":"Altair",
-        "short_desc":"Bright star in Aquila",
-        "info":"Altair is part of the Summer Triangle and is one of the closest bright stars to Earth.",
-        "sky_position":"Northern sky during summer evenings",
-        "features":"Forms the Summer Triangle with Vega and Deneb.",
-        "image":"https://upload.wikimedia.org/wikipedia/commons/7/7e/Altair_star.png",
-        "direction":"Rises in the East and sets in the West."
+    "altair": {
+        "name": "Altair",
+        "short_desc": "Bright star in Aquila",
+        "info": "Altair is part of the Summer Triangle and is one of the closest bright stars to Earth.",
+        "sky_position": "Northern sky during summer evenings",
+        "features": "Forms the Summer Triangle with Vega and Deneb.",
+        "svg": """
+<svg width="400" height="400">
+  <circle cx="200" cy="200" r="8" fill="yellow"/>
+  <circle cx="100" cy="100" r="5" fill="white"/>
+  <circle cx="300" cy="100" r="5" fill="white"/>
+  <circle cx="100" cy="300" r="5" fill="white"/>
+  <circle cx="300" cy="300" r="5" fill="white"/>
+</svg>
+"""
     },
-    "vega":{
-        "name":"Vega",
-        "short_desc":"Very bright star in Lyra",
-        "info":"Vega is one of the brightest stars visible from Earth.",
-        "sky_position":"High in the northern summer sky",
-        "features":"Part of the Summer Triangle.",
-        "image":"https://upload.wikimedia.org/wikipedia/commons/1/16/Vega_star.png",
-        "direction":"Appears high overhead during summer; use to estimate overhead direction."
+    "vega": {
+        "name": "Vega",
+        "short_desc": "Very bright star in Lyra",
+        "info": "Vega is one of the brightest stars visible from Earth.",
+        "sky_position": "High in the northern summer sky",
+        "features": "Part of the Summer Triangle.",
+        "svg": """
+<svg width="400" height="400">
+  <circle cx="200" cy="100" r="8" fill="yellow"/>
+  <circle cx="100" cy="200" r="5" fill="white"/>
+  <circle cx="300" cy="200" r="5" fill="white"/>
+  <circle cx="200" cy="300" r="5" fill="white"/>
+</svg>
+"""
     }
 }
-
-# ----------------------------
-# CONSTELLATION DATABASE
-# ----------------------------
 
 constellations = {
-    "ursa_major":{
-        "name":"Ursa Major",
-        "short_desc":"Contains the Big Dipper.",
-        "info":"Ursa Major contains the Big Dipper which helps locate Polaris (North Star).",
-        "image":"https://upload.wikimedia.org/wikipedia/commons/7/77/Ursa_Major_IAU.svg",
-        "direction":"Use the two outer stars of the Big Dipper to locate Polaris (North)."
-    },
-    "orion":{
-        "name":"Orion",
-        "short_desc":"Famous hunter constellation.",
-        "info":"Orion contains Orion's Belt (three stars in a straight line).",
-        "image":"https://upload.wikimedia.org/wikipedia/commons/5/57/Orion_Constellation.png",
-        "direction":"Orion's Belt rises in the East and sets in the West."
+    "ursa_major": {
+        "name": "Ursa Major",
+        "short_desc": "Large northern constellation containing the Big Dipper.",
+        "info": "Ursa Major contains the Big Dipper which helps locate Polaris.",
+        "svg": """
+<svg width="400" height="300">
+  <circle cx="50" cy="50" r="8" fill="yellow"/>
+  <circle cx="100" cy="50" r="8" fill="yellow"/>
+  <circle cx="150" cy="75" r="8" fill="yellow"/>
+  <circle cx="200" cy="100" r="8" fill="yellow"/>
+  <circle cx="250" cy="125" r="8" fill="yellow"/>
+  <line x1="50" y1="50" x2="100" y2="50" stroke="white" stroke-width="2"/>
+  <line x1="100" y1="50" x2="150" y2="75" stroke="white" stroke-width="2"/>
+  <line x1="150" y1="75" x2="200" y2="100" stroke="white" stroke-width="2"/>
+  <line x1="200" y1="100" x2="250" y2="125" stroke="white" stroke-width="2"/>
+</svg>
+"""
     }
 }
 
-# ----------------------------
-# Utility functions
-# ----------------------------
+# -----------------------------
+# GLASS UI STYLE
+# -----------------------------
+glass_style = """
+<style>
+.glass-box {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    border-radius: 15px;
+    padding: 20px;
+    color: white;
+    margin-bottom: 20px;
+}
+body {
+    background-color: #0b0c1a;
+    color: white;
+}
+</style>
+"""
+st.markdown(glass_style, unsafe_allow_html=True)
 
-def show_star_details(key):
-    star = stars[key]
-    st.subheader(f"{star['name']} ⭐")
-    st.write(f"**Description:** {star['short_desc']}")
-    st.write(f"**Info:** {star['info']}")
-    st.write(f"**Sky Position:** {star['sky_position']}")
-    st.write(f"**Features:** {star['features']}")
-    st.image(star['image'], use_column_width=True)
-    st.write(f"**Direction:** {star['direction']}")
+st.title("✨ Constellation Star Navigator ✨")
+st.markdown("<div class='glass-box'>Select a star or constellation to see details and visualization.</div>", unsafe_allow_html=True)
 
-def show_constellation_details(key):
-    const = constellations[key]
-    st.subheader(f"{const['name']} 🌌")
-    st.write(f"**Description:** {const['short_desc']}")
-    st.write(f"**Info:** {const['info']}")
-    st.image(const['image'], use_column_width=True)
-    st.write(f"**Direction:** {const['direction']}")
+# -----------------------------
+# TWO-COLUMN LAYOUT
+# -----------------------------
+col1, col2 = st.columns(2)
 
-# ----------------------------
-# Main UI
-# ----------------------------
+with col2:  # Right column for input
+    mode = st.radio("What do you know about your location?", ("Exact coordinates", "Environmental description", "No idea"))
 
-st.title("⭐ Star Navigation Tool ⭐")
-st.write("Select the information you know about your location:")
+    if mode == "Exact coordinates":
+        lat = st.number_input("Enter Latitude:", value=0.0)
+        lon = st.number_input("Enter Longitude:", value=0.0)
+        visibility = st.selectbox("Sky Visibility", ["Clear", "Partial", "Low", "Obstructed"])
 
-mode = st.selectbox("Choose Mode:", ["Exact coordinates", "Environmental description", "No idea"])
+        if visibility == "Clear":
+            view_choice = st.radio("What do you see?", ("A single star", "Multiple stars / constellation"))
+            if view_choice == "A single star":
+                star_choice = st.selectbox("Choose Star", list(stars.keys()))
+            else:
+                star_choice = st.selectbox("Choose Constellation", list(constellations.keys()))
 
-# ----------------------------
-# Exact Coordinates Mode
-# ----------------------------
-
-if mode == "Exact coordinates":
-    lat = st.number_input("Latitude:", value=0.0, format="%.6f")
-    lon = st.number_input("Longitude:", value=0.0, format="%.6f")
-    
-    visibility = st.selectbox("Sky Visibility:", ["Clear", "Partial", "Low", "Obstructed"])
-    
-    if visibility == "Clear":
-        view_choice = st.selectbox("What do you see?", ["A single star", "Multiple stars / constellation"])
-        
-        if view_choice == "A single star":
-            star_choice = st.selectbox("Select Star:", list(stars.keys()))
-            show_star_details(star_choice)
         else:
-            const_choice = st.selectbox("Select Constellation:", list(constellations.keys()))
-            show_constellation_details(const_choice)
-    else:
-        st.warning("Sky visibility is limited. Cannot provide precise details.")
+            st.warning("Sky visibility is limited. Cannot provide precise details.")
+            star_choice = None
 
-# ----------------------------
-# Environmental Description Mode
-# ----------------------------
+    elif mode == "Environmental description":
+        sea_color = st.text_input("Sea color (blue/green/turquoise):")
+        sea_life = st.text_input("Sea life observed (fish/birds/whales):")
+        wind_dir = st.text_input("Wind direction (north/south/east/west):")
+        star_choice = random.choice(list(constellations.keys()))
 
-elif mode == "Environmental description":
-    sea_color = st.selectbox("Sea color:", ["Blue", "Green", "Turquoise"])
-    sea_life = st.text_input("Sea life observed (fish/birds/whales):")
-    wind_dir = st.selectbox("Wind direction:", ["North", "South", "East", "West"])
-    
-    st.info("Analyzing environment...")
-    random_const = random.choice(list(constellations.keys()))
-    show_constellation_details(random_const)
-
-# ----------------------------
-# No Idea Mode
-# ----------------------------
-
-elif mode == "No idea":
-    sky_visible = st.selectbox("Can you see the sky and stars?", ["Yes", "No"])
-    if sky_visible == "Yes":
-        const_choice = st.selectbox("Select Constellation:", list(constellations.keys()))
-        show_constellation_details(const_choice)
-    else:
-        land_visible = st.selectbox("Can you see land or landmarks?", ["Yes", "No"])
-        if land_visible == "Yes":
-            mountain = st.selectbox("Do you see mountains?", ["Yes", "No"])
-            coast = st.selectbox("Do you see a coastline?", ["Yes", "No"])
-            random_const = random.choice(list(constellations.keys()))
-            show_constellation_details(random_const)
+    else:  # No idea
+        sky_visible = st.radio("Can you see the sky and stars?", ("Yes", "No"))
+        if sky_visible == "Yes":
+            star_choice = st.selectbox("Choose Constellation", list(constellations.keys()))
         else:
-            clue = st.text_input("Provide any useful clue:")
-            random_star = random.choice(list(stars.keys()))
-            show_star_details(random_star)
-            
+            star_choice = random.choice(list(stars.keys()))
+
+# -----------------------------
+# DISPLAY SVG AND INFO
+# -----------------------------
+with col1:  # Left column for SVG visualization
+    if star_choice:
+        if star_choice in stars:
+            st.markdown(stars[star_choice]["svg"], unsafe_allow_html=True)
+        elif star_choice in constellations:
+            st.markdown(constellations[star_choice]["svg"], unsafe_allow_html=True)
+
+with col2:  # Right column for details
+    if star_choice:
+        if star_choice in stars:
+            star = stars[star_choice]
+            st.markdown(f"<div class='glass-box'><h3>{star['name']}</h3><p>{star['short_desc']}</p></div>", unsafe_allow_html=True)
+            st.write(f"Info: {star['info']}")
+            st.write(f"Sky Position: {star['sky_position']}")
+            st.write(f"Features: {star['features']}")
+        elif star_choice in constellations:
+            const = constellations[star_choice]
+            st.markdown(f"<div class='glass-box'><h3>{const['name']}</h3><p>{const['short_desc']}</p></div>", unsafe_allow_html=True)
+            st.write(f"Info: {const['info']}")
